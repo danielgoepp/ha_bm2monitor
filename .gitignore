@@ -28,5 +28,8 @@ Thumbs.db
 .coverage
 htmlcov/
 
+# Claude
+CLAUDE.md
+
 # Environment
 .env

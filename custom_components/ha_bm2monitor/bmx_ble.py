@@ -352,20 +352,20 @@ class BMxBluetoothDeviceData(BluetoothData):
                 BleakClientWithServiceCache, ble_device, ble_device.address
             )
         except Exception as ex:
-            _LOGGER.debug(f"Error {ex} connecting to Bluetooth device {ble_device.address}.  client = {client}")
-
-        if not client is None:
-            _LOGGER.debug(f"Connected to BM2 device {ble_device.address} - client = {client}")
-    
-            try:
-                _LOGGER.debug(f"Waiting for _get_payload to complete for device {ble_device.address}")
-                await self._get_payload(client)
-            except BleakError as err:
-                _LOGGER.warning(f"Reading gatt characters failed with error {err}")
-            finally:
-                await client.disconnect()
-                _LOGGER.debug("Disconnected from active bluetooth client")
+            _LOGGER.warning(f"Unable to connect to {ble_device.address}: {ex}")
             return self._finish_update()
+
+        _LOGGER.debug(f"Connected to BM2 device {ble_device.address} - client = {client}")
+
+        try:
+            _LOGGER.debug(f"Waiting for _get_payload to complete for device {ble_device.address}")
+            await self._get_payload(client)
+        except BleakError as err:
+            _LOGGER.warning(f"Reading gatt characters failed with error {err}")
+        finally:
+            await client.disconnect()
+            _LOGGER.debug("Disconnected from active bluetooth client")
+        return self._finish_update()
 
 
     def _adjust_percentage(self, raw_percentage: int, battery_detail, voltage: float, custom: bool = False) -> int:
